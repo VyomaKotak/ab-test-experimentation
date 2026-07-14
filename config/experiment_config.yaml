@@ -1,0 +1,42 @@
+experiment:
+  name: "criteo_incrementality_test"
+  sector: "advertising_ecommerce"
+  source: "huggingface: criteo/criteo-uplift"
+  hypothesis: >
+    Users in the treatment arm, whose advertiser participates in the RTB auction
+    for them, convert at a higher rate than users in the control arm, who are
+    withheld from targeting.
+  unit_of_randomisation: "user"
+  design_note: >
+    This is an incrementality test. Control users are actively prevented from
+    being targeted. The allocation is deliberately 85 / 15 in favour of treatment,
+    because withholding advertising from users is costly, so the control arm is
+    kept as small as the required power allows.
+
+design:
+  alpha: 0.05
+  power: 0.80
+  baseline_conversion_rate: 0.00292
+  baseline_visit_rate: 0.046992
+  minimum_detectable_effect_relative: 0.10
+  expected_traffic_split:
+    control: 0.15
+    treatment: 0.85
+
+metrics:
+  primary:
+    - conversion
+  secondary:
+    - visit
+  guardrail:
+    - exposure
+
+corrections:
+  method: "fdr_bh"
+  family_wise_alpha: 0.05
+
+srm:
+  alpha: 0.001
+
+decision:
+  practical_significance_relative: 0.05
